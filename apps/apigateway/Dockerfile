@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN npm run build-apigateway
 
 ################################################## 
 
@@ -28,6 +28,5 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-EXPOSE 3000
 
-CMD ["node", "dist/main"]
+CMD ["node","dist/apps/apigateway/src/main"]

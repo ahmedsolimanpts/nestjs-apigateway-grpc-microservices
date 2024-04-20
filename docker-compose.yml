@@ -1,24 +1,32 @@
-version: '3.8'
 services:
   apigateway:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: ["npm", "run", "start:prod", "apigateway"]  # Modified or additional commands
+      dockerfile: ./apps/apigateway/Dockerfile
+      target: development
+
+    command: npm run start:prod-apigateway
     ports:
       - "3000:3000"
     networks:
       - nestnet
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - auth
 
   auth:
     build:
       context: .
-      dockerfile: Dockerfile
-    command: ["npm", "run", "start:prod", "auth"]  # Modified or additional commands
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:prod-auth
     ports:
       - "3001:3000"
     networks:
       - nestnet
+    volumes:
+      - .:/usr/src/app
 
 networks:
   nestnet:
