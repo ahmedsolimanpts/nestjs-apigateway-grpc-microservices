@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  apigateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["npm", "run", "start:prod", "apigateway"]  # Modified or additional commands
+    ports:
+      - "3000:3000"
+    networks:
+      - nestnet
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["npm", "run", "start:prod", "auth"]  # Modified or additional commands
+    ports:
+      - "3001:3000"
+    networks:
+      - nestnet
+
+networks:
+  nestnet:
+    driver: bridge
