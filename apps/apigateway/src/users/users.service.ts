@@ -7,6 +7,7 @@ import {
 } from '@app/common';
 import { AUTH_SERVICE } from './constants';
 import { ClientGrpc } from '@nestjs/microservices';
+import { FindOneUserDto } from 'apps/auth/src/users/dto/user.dto';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -32,8 +33,8 @@ export class UsersService implements OnModuleInit {
     return await this.usersService.findAllUsers({});
   }
 
-  async findOne(id: string) {
-    return await this.usersService.findOneUser({ id });
+  async findOne(data: FindOneUserDto) {
+    return await this.usersService.findOneUser(data);
   }
 
   async update(id: string, updateUserDto: UpdateOneUserDto) {

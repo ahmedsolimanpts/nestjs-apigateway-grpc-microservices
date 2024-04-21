@@ -1,41 +1,34 @@
 import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
-import {
-  UsersSerivceController,
-  UsersSerivceControllerMethods,
-  CreateUserDto,
-  UpdateOneUserDto,
-  FindOneUserDto,
-  PaginationDto,
-} from '@app/common';
-import { Observable } from 'rxjs';
+import { GrpcMethod } from '@nestjs/microservices';
+import { CreateUserDto, FindOneUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Controller()
-@UsersSerivceControllerMethods()
-export class UsersController implements UsersSerivceController {
+export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @GrpcMethod('UsersSerivce', 'CreateUser')
   createUser(createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  findAllUsers() {
-    return this.usersService.findAll();
+  @GrpcMethod('UsersSerivce', 'FindAllUsers')
+  async findAllUsers() {
+    return await this.usersService.findAll();
   }
 
-  findOneUser(findOneUserDto: FindOneUserDto) {
-    return this.usersService.findOne(findOneUserDto.id);
+  @GrpcMethod('UsersSerivce', 'FindOneUser')
+  async findOneUser(data: FindOneUserDto) {
+    return await this.usersService.findOne(data.id);
   }
 
-  updateOneUser(updateUserDto: UpdateOneUserDto) {
+  @GrpcMethod('UsersSerivce', 'UpdateOneUser')
+  updateOneUser(updateUserDto: UpdateUserDto) {
     return this.usersService.update(updateUserDto.id, updateUserDto);
   }
 
+  @GrpcMethod('UsersSerivce', 'RemoveOneUser')
   removeOneUser(findOneUserDto: FindOneUserDto) {
     return this.usersService.remove(findOneUserDto.id);
-  }
-
-  queryUsers(paginationDto: Observable<PaginationDto>) {
-    return this.usersService.queryUsers(paginationDto);
   }
 }

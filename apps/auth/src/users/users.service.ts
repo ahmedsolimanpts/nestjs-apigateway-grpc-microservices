@@ -1,76 +1,68 @@
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import {
-  User,
-  CreateUserDto,
-  Users,
-  UpdateOneUserDto,
-  PaginationDto,
-} from '@app/common';
-import { Observable, Subject } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from './Schema/user.schema';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { IUser } from '@app/common';
 
 @Injectable()
-export class UsersService implements OnModuleInit {
-  private readonly users: User[] = [];
+export class UsersService {
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  onModuleInit() {
-    // for(let i=0; i<=100;i++){
-    // }
-  }
-
-  create(createUserDto: CreateUserDto): User {
-    const user: User = {
-      ...createUserDto,
-      id: randomUUID(),
-    };
-    this.users.push(user);
-    return user;
-  }
-
-  findAll(): Users {
-    return { users: this.users };
-  }
-
-  findOne(id: string): User {
-    return this.users.find((user) => user.id === id);
-  }
-
-  update(id: string, updateUserDto: UpdateOneUserDto) {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex != -1) {
-      this.users[userIndex] = {
-        ...this.users[userIndex],
-        ...updateUserDto,
-      };
-      return this.users[userIndex];
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const newUser = new this.userModel(createUserDto);
+      return await newUser.save();
+    } catch (err) {
+      throw err;
     }
-    throw new NotFoundException('User Not Exist');
+  }
+
+  async findAll() {
+    try {
+      const userDocuments = await this.userModel.find().exec();
+      const users = userDocuments.map((user) => ({
+        Id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      }));
+      return { users };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async findOne(id: string): Promise<IUser> {
+    try {
+      const user = await this.userModel.findById(id).exec();
+      return {
+        Id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        password: user.password,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  update(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      const id = updateUserDto.id;
+      return this.userModel.findByIdAndUpdate(id, updateUserDto, {
+        new: true,
+      });
+    } catch (err) {
+      throw err;
+    }
   }
 
   remove(id: string) {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex != -1) {
-      return this.users.splice(userIndex)[0];
+    try {
+      return this.userModel.findByIdAndDelete(id);
+    } catch (err) {
+      throw err;
     }
-    throw new NotFoundException('User Not Exist');
-  }
-
-  queryUsers(
-    paginationDtoStream: Observable<PaginationDto>,
-  ): Observable<Users> {
-    const subject = new Subject<Users>();
-    const onNext = (paginationDto: PaginationDto) => {
-      const start = paginationDto.page * paginationDto.skip;
-      subject.next({
-        users: this.users.slice(start, start + paginationDto.skip),
-      });
-    };
-    const onCompelete = () => subject.complete();
-    paginationDtoStream.subscribe({
-      next: onNext,
-      complete: onCompelete,
-    });
-
-    return subject.asObservable();
   }
 }

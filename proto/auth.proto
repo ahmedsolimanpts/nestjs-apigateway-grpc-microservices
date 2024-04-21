@@ -3,18 +3,11 @@ syntax = 'proto3';
 package auth;
 
 service UsersSerivce {
-    rpc CreateUser (CreateUserDto) returns (User) {}
+    rpc CreateUser (CreateUserDto) returns (IUser) {}
     rpc FindAllUsers (Empty) returns(Users) {}
-    rpc FindOneUser (FindOneUserDto) returns(User) {}
-    rpc UpdateOneUser (UpdateOneUserDto) returns(User) {}
-    rpc RemoveOneUser (FindOneUserDto) returns(User) {}
-    rpc QueryUsers (stream PaginationDto) returns (stream Users) {}
-}
-
-message PaginationDto {
-
-    int32 page = 1;
-    int32 skip = 2;
+    rpc FindOneUser (FindOneUserDto) returns(IUser) {}
+    rpc UpdateOneUser (UpdateOneUserDto) returns(IUser) {}
+    rpc RemoveOneUser (FindOneUserDto) returns(IUser) {}
 }
 
 
@@ -32,7 +25,7 @@ message FindOneUserDto {
 message Empty {};
 
 message Users {
-    repeated User users = 1;
+    repeated IUser users = 1;
 }
 
 message CreateUserDto {
@@ -41,8 +34,8 @@ message CreateUserDto {
     string password = 3;
 }
 
-message User {
-    string id = 1;
+message IUser {
+    string _id = 1;
     string username = 2;
     string email = 3;
     string password = 4;

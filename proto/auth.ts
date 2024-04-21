@@ -4,11 +4,6 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "auth";
 
-export interface PaginationDto {
-  page: number;
-  skip: number;
-}
-
 export interface UpdateOneUserDto {
   id: string;
 }
@@ -21,7 +16,7 @@ export interface Empty {
 }
 
 export interface Users {
-  users: User[];
+  users: IUser[];
 }
 
 export interface CreateUserDto {
@@ -30,8 +25,8 @@ export interface CreateUserDto {
   password: string;
 }
 
-export interface User {
-  id: string;
+export interface IUser {
+  Id: string;
   username: string;
   email: string;
   password: string;
@@ -40,31 +35,27 @@ export interface User {
 export const AUTH_PACKAGE_NAME = "auth";
 
 export interface UsersSerivceClient {
-  createUser(request: CreateUserDto): Observable<User>;
+  createUser(request: CreateUserDto): Observable<IUser>;
 
   findAllUsers(request: Empty): Observable<Users>;
 
-  findOneUser(request: FindOneUserDto): Observable<User>;
+  findOneUser(request: FindOneUserDto): Observable<IUser>;
 
-  updateOneUser(request: UpdateOneUserDto): Observable<User>;
+  updateOneUser(request: UpdateOneUserDto): Observable<IUser>;
 
-  removeOneUser(request: FindOneUserDto): Observable<User>;
-
-  queryUsers(request: Observable<PaginationDto>): Observable<Users>;
+  removeOneUser(request: FindOneUserDto): Observable<IUser>;
 }
 
 export interface UsersSerivceController {
-  createUser(request: CreateUserDto): Promise<User> | Observable<User> | User;
+  createUser(request: CreateUserDto): Promise<IUser> | Observable<IUser> | IUser;
 
   findAllUsers(request: Empty): Promise<Users> | Observable<Users> | Users;
 
-  findOneUser(request: FindOneUserDto): Promise<User> | Observable<User> | User;
+  findOneUser(request: FindOneUserDto): Promise<IUser> | Observable<IUser> | IUser;
 
-  updateOneUser(request: UpdateOneUserDto): Promise<User> | Observable<User> | User;
+  updateOneUser(request: UpdateOneUserDto): Promise<IUser> | Observable<IUser> | IUser;
 
-  removeOneUser(request: FindOneUserDto): Promise<User> | Observable<User> | User;
-
-  queryUsers(request: Observable<PaginationDto>): Observable<Users>;
+  removeOneUser(request: FindOneUserDto): Promise<IUser> | Observable<IUser> | IUser;
 }
 
 export function UsersSerivceControllerMethods() {
@@ -74,7 +65,7 @@ export function UsersSerivceControllerMethods() {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UsersSerivce", method)(constructor.prototype[method], method, descriptor);
     }
-    const grpcStreamMethods: string[] = ["queryUsers"];
+    const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcStreamMethod("UsersSerivce", method)(constructor.prototype[method], method, descriptor);
